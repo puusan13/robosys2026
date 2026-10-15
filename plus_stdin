@@ -1,3 +1,4 @@
+x += tonum(line.rstrip())   #line.rstrip()で末尾の改行を除去
 #!/usr/bin/python3
 import sys
 
