@@ -10,7 +10,7 @@ for line in sys.stdin:
         x += float(line)
 
 print(x)
-x += tonum(line.rstrip())   #line.rstrip()で末尾の改行を除去
+
 for line in sys.stdin:
 x += tonum(line.rstrip())
 print(x)
