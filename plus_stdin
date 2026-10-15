@@ -1,3 +1,4 @@
+
 #!/usr/bin/python3
 import sys
 #本来は関数の前後に空行を2行あける（スライドの都合で省略）
@@ -14,5 +15,6 @@ for line in sys.stdin:
 print(x)
 
 for line in sys.stdin:
-    line = line.rstrip()    #for文の下にこの行を挿入
-    x += tonum(line)
+    x += tonum(line.rstrip())  #今回はGitHub側を採用
+
+print(x) 4895a8d1473b9d5fb61e08f83ae6284e74a12957
