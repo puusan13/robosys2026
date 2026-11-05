@@ -1,14 +1,8 @@
 #!/usr/bin/python3
-# SPDX-FileCopyrightText: 2026 Sora Makino
-# SPDX-License-Identifier: BSD-3-Clause
-
 import sys
 
-ans = 0
-for line in sys.stdin:
-    try:
-        ans += int(line)
-    except ValueError:
-        sys.exit(1)
+x = 0.0
+for line in sys.stdin:      #plus_bのsys.argv[1:]をsys.stdinに変えただけ
+    x += float(line)        #floatは前後の改行や空白を無視するのでstrip不要
 
-print(ans)
+print(x)
