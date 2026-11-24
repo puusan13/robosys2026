@@ -1,28 +1,33 @@
-#!/usr/bin/python3
+#!/bin/bash -xv
 # SPDX-FileCopyrightText: 2026 Sora Makino
 # SPDX-License-Identifier: BSD-3-Clause
 
-from datetime import datetime
-import sys
-import time
-from zoneinfo import ZoneInfo
+ng () {
+    echo "${1}行目が違うよ"
+    res=1
+}
 
-JST = ZoneInfo("Asia/Tokyo")
+res=0
 
+### NORMAL INPUT ###
+out=$(timeout --preserve-status -s INT 1.5 ./clock)
+status=$?
+[ "${status}" = 0 ] || [ "${status}" = 130 ] || ng "$LINENO"
 
-def main():
-    if len(sys.argv) > 1:
-        print("error: no arguments allowed", file=sys.stderr)
-        sys.exit(1)
+lines=$(echo "${out}" | wc -l)
+[ "${lines}" -ge 1 ] || ng "$LINENO"
 
-    try:
-        while True:
-            now_jst = datetime.now(JST)
-            print(now_jst.strftime("%Y-%m-%d %H:%M:%S"), flush=True)
-            time.sleep(1)
-    except KeyboardInterrupt:
-        pass
+echo "${out}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$'
+[ "$?" = 0 ] || ng "$LINENO"
 
+### STRANGE INPUT ###
+out=$(./clock 123 2>/dev/null)
+[ "$?" = 1 ]      || ng "$LINENO"
+[ "${out}" = "" ] || ng "$LINENO"
 
-if __name__ == "__main__":
-    main()
+out=$(./clock abc 2>/dev/null)
+[ "$?" = 1 ]      || ng "$LINENO"
+[ "${out}" = "" ] || ng "$LINENO"
+
+[ "${res}" = 0 ] && echo OK
+exit $res
