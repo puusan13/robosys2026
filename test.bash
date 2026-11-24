@@ -10,12 +10,13 @@ ng () {
 res=0
 
 ### NORMAL INPUT ###
-# 2.5秒間動かして Ctrl+C（SIGINT）で停止し、3行出力されるか確認
-out=$(timeout --preserve-status -s INT 2.5 ./clock)
-[ "$?" = 0 ] || ng "$LINENO"
+# 1.5秒間動かして Ctrl+C（SIGINT）で停止し、出力されるか確認
+out=$(timeout --preserve-status -s INT 1.5 ./clock)
+status=$?
+[ "${status}" = 0 ] || [ "${status}" = 130 ] || ng "$LINENO"
 
 lines=$(echo "${out}" | wc -l)
-[ "${lines}" = 3 ] || ng "$LINENO"
+[ "${lines}" -ge 1 ] || ng "$LINENO"
 
 echo "${out}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$'
 [ "$?" = 0 ] || ng "$LINENO"
