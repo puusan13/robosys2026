@@ -10,38 +10,15 @@ from zoneinfo import ZoneInfo
 JST = ZoneInfo("Asia/Tokyo")
 
 
-def parse_count(args):
-    if len(args) == 0:
-        return None
-    if len(args) > 1:
-        raise ValueError("too many arguments")
-
-    arg = args[0]
-    if not (arg.isascii() and arg.isdigit()):
-        raise ValueError(f"invalid count: {arg}")
-
-    count = int(arg)
-    if count <= 0:
-        raise ValueError("count must be greater than 0")
-
-    return count
-
-
 def main():
-    try:
-        count = parse_count(sys.argv[1:])
-    except ValueError as e:
-        print(f"error: {e}", file=sys.stderr)
+    if len(sys.argv) > 1:
+        print("error: no arguments allowed", file=sys.stderr)
         sys.exit(1)
 
-    printed = 0
     try:
         while True:
             now_jst = datetime.now(JST)
             print(now_jst.strftime("%Y-%m-%d %H:%M:%S"), flush=True)
-            printed += 1
-            if count is not None and printed >= count:
-                break
             time.sleep(1)
     except KeyboardInterrupt:
         pass
