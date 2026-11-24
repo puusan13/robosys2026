@@ -1,32 +1,44 @@
-#!/bin/bash
+#!/bin/bash -xv
 # SPDX-FileCopyrightText: 2026 Sora Makino
 # SPDX-License-Identifier: BSD-3-Clause
 
-ng () {                               # 関数ngの定義（P18と同じ）
-        echo ${1}行目のテスト失敗
-        res=1                          # 失敗したことを記録
+ng () {
+    echo "${1}行目が違うよ"
+    res=1
 }
 
-res=0                                  # 0: 失敗なし（ngが呼ばれると1になる）
-
-out=$(seq 5 | ./plus)                  # 表の1行目: plusの出力を変数outに記録
-[ "${out}" = 15 ] || ng "$LINENO"      # 期待する出力（15）でなければngを呼び出す
-
-[ "${res}" = 0 ] && echo OK            # 通ったのが（人間に）分かるように表示
-exit $res                              # 終了ステータスを返して終了（機械向け）
+res=0
 
 ### NORMAL INPUT ###
-out=$(seq 5 | ./plus)
-[ "$?" = 0 ]      || ng "$LINENO"
-[ "${out}" = 15 ] || ng "$LINENO"
+# 3回指定で3行出力され、YYYY-MM-DD HH:MM:SS 形式になっているか確認
+out=$(./clock 3)
+[ "$?" = 0 ] || ng "$LINENO"
+lines=$(echo "${out}" | wc -l)
+[ "${lines}" = 3 ] || ng "$LINENO"
+
+echo "${out}" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$'
+[ "$?" = 0 ] || ng "$LINENO"
+
+# 引数なし（連続表示）で起動し、1.5秒後に停止したとき2行出力されるか確認
+out=$(timeout -s INT 1.5 ./clock)
+lines=$(echo "${out}" | wc -l)
+[ "${lines}" = 2 ] || ng "$LINENO"
 
 ### STRANGE INPUT ###
-out=$(echo あ | ./plus)           #計算できない値を入力してみる
-[ "$?" = 1 ]      || ng "$LINENO" #終了ステータスが1なのを確認
-[ "${out}" = "" ] || ng "$LINENO" #上の行と入れ替えるとダメ（なぜ？）
+out=$(./clock 0 2>/dev/null)
+[ "$?" = 1 ]      || ng "$LINENO"
+[ "${out}" = "" ] || ng "$LINENO"
 
-out=$(echo | ./plus)              #なにも入力しない
-[ "$?" = 1 ]      || ng "$LINENO" #これも異常終了する
+out=$(./clock -1 2>/dev/null)
+[ "$?" = 1 ]      || ng "$LINENO"
+[ "${out}" = "" ] || ng "$LINENO"
+
+out=$(./clock abc 2>/dev/null)
+[ "$?" = 1 ]      || ng "$LINENO"
+[ "${out}" = "" ] || ng "$LINENO"
+
+out=$(./clock 1 2 2>/dev/null)
+[ "$?" = 1 ]      || ng "$LINENO"
 [ "${out}" = "" ] || ng "$LINENO"
 
 [ "${res}" = 0 ] && echo OK
