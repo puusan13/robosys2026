@@ -7,7 +7,7 @@ import sys
 import time
 from zoneinfo import ZoneInfo
 
-NY = ZoneInfo("America/New_York")
+JST = ZoneInfo("Asia/Tokyo")
 
 
 def parse_count(args):
@@ -37,8 +37,8 @@ def main():
     printed = 0
     try:
         while True:
-            now_ny = datetime.now(NY)
-            print(now_ny.strftime("%Y-%m-%d %H:%M:%S"), flush=True)
+            now_jst = datetime.now(JST)
+            print(now_jst.strftime("%Y-%m-%d %H:%M:%S"), flush=True)
             printed += 1
             if count is not None and printed >= count:
                 break
